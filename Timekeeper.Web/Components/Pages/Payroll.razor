@@ -1,0 +1,62 @@
+@page "/payroll"
+@inject Timekeeper.Application.Abstractions.IWorkspaceQueryService WorkspaceQueryService
+
+<PageTitle>Payroll</PageTitle>
+
+@if (preview is null)
+{
+    <p class="loading-state">Building payroll preview...</p>
+}
+else
+{
+    <section class="hero-panel compact">
+        <div>
+            <p class="eyebrow">Live preview</p>
+            <h2>@preview.EmployeeName</h2>
+            <p class="hero-copy">@preview.PayFrequency payroll preview computed from recent time entries and the seeded tax rules.</p>
+        </div>
+        <div class="payroll-totals">
+            <div><span>Hours</span><strong>@preview.HoursWorked</strong></div>
+            <div><span>Gross</span><strong>@preview.GrossPay.ToString("C")</strong></div>
+            <div><span>Net</span><strong>@preview.NetPay.ToString("C")</strong></div>
+            <div><span>YTD Gross</span><strong>@preview.YtdGross.ToString("C")</strong></div>
+        </div>
+    </section>
+
+    <section class="feature-panel">
+        <h3>Tax line preview</h3>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Jurisdiction</th>
+                <th>Strategy</th>
+                <th>Status</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var line in preview.TaxLines)
+            {
+                <tr>
+                    <td>
+                        <strong>@line.RuleCode</strong>
+                        <div class="cell-subtitle">@line.RuleName</div>
+                    </td>
+                    <td>@line.Jurisdiction</td>
+                    <td>@line.Strategy</td>
+                    <td>@line.ReviewStatus</td>
+                    <td>@line.Amount.ToString("C")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}
+
+@code {
+    private Timekeeper.Application.Models.PayrollPreview? preview;
+
+    protected override async Task OnInitializedAsync()
+        => preview = await WorkspaceQueryService.GetPayrollPreviewAsync();
+}

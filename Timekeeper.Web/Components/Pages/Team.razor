@@ -1,0 +1,40 @@
+@page "/team"
+@inject Timekeeper.Application.Abstractions.IWorkspaceQueryService WorkspaceQueryService
+
+<PageTitle>Team</PageTitle>
+
+<section class="panel-header">
+    <div>
+        <p class="eyebrow">Employees and tax profiles</p>
+        <h2>Who is in the system</h2>
+    </div>
+</section>
+
+@if (employees.Count == 0)
+{
+    <p class="loading-state">Loading employee cards...</p>
+}
+else
+{
+    <section class="card-grid">
+        @foreach (var employee in employees)
+        {
+            <article class="feature-panel person-card">
+                <div class="person-avatar">@employee.FullName[..1]</div>
+                <div>
+                    <h3>@employee.FullName</h3>
+                    <p>@employee.EmployeeNumber • @employee.Department</p>
+                    <p>@employee.WorkState / local code @employee.LocalTaxCode</p>
+                    <p>@employee.HourlyRate.ToString("C") per hour • @employee.Status</p>
+                </div>
+            </article>
+        }
+    </section>
+}
+
+@code {
+    private IReadOnlyList<Timekeeper.Application.Models.EmployeeCard> employees = [];
+
+    protected override async Task OnInitializedAsync()
+        => employees = await WorkspaceQueryService.GetEmployeesAsync();
+}

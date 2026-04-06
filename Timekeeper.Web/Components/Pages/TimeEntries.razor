@@ -1,0 +1,53 @@
+@page "/time"
+@inject Timekeeper.Application.Abstractions.IWorkspaceQueryService WorkspaceQueryService
+
+<PageTitle>Time</PageTitle>
+
+<section class="panel-header">
+    <div>
+        <p class="eyebrow">Captured work</p>
+        <h2>Recent time entries</h2>
+    </div>
+</section>
+
+@if (entries.Count == 0)
+{
+    <p class="loading-state">Loading recent time...</p>
+}
+else
+{
+    <section class="feature-panel">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Employee</th>
+                <th>Hours</th>
+                <th>OT</th>
+                <th>Project</th>
+                <th>Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var entry in entries)
+            {
+                <tr>
+                    <td>@entry.WorkDate</td>
+                    <td>@entry.EmployeeName</td>
+                    <td>@entry.HoursWorked</td>
+                    <td>@entry.OvertimeHours</td>
+                    <td>@entry.ProjectCode</td>
+                    <td>@entry.Notes</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}
+
+@code {
+    private IReadOnlyList<Timekeeper.Application.Models.TimeEntryRecord> entries = [];
+
+    protected override async Task OnInitializedAsync()
+        => entries = await WorkspaceQueryService.GetRecentTimeEntriesAsync();
+}

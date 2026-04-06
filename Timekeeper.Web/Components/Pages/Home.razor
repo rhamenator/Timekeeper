@@ -1,0 +1,66 @@
+@page "/"
+@inject Timekeeper.Application.Abstractions.IWorkspaceQueryService WorkspaceQueryService
+
+<PageTitle>Overview</PageTitle>
+
+@if (snapshot is null)
+{
+    <p class="loading-state">Loading the new Timekeeper workspace...</p>
+}
+else
+{
+    <section class="hero-panel">
+        <div>
+            <p class="eyebrow">Cross-platform payroll core</p>
+            <h2>Modern time capture and payroll review with legacy tax knowledge baked into the model.</h2>
+            <p class="hero-copy">This first milestone rebuilds the old <code>TIMELOG</code> workflow as a multi-platform .NET application, keeps tax calculation patterns data-driven, and marks every legacy seed that needs a current-law refresh.</p>
+        </div>
+        <div class="hero-orbit">
+            <div class="orbit-card">
+                <span>Refresh queue</span>
+                <strong>@snapshot.RulesNeedingRefresh rules</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="metric-grid">
+        @foreach (var metric in snapshot.Metrics)
+        {
+            <article class="metric-card @metric.Accent">
+                <span>@metric.Label</span>
+                <strong>@metric.Value</strong>
+            </article>
+        }
+    </section>
+
+    <section class="panel-grid">
+        <article class="feature-panel">
+            <h3>What this rebuild changes</h3>
+            <ul class="signal-list">
+                <li>FoxPro tables become strongly-typed PostgreSQL entities.</li>
+                <li>Tax rules are versioned data with calculation strategies, not hidden screen code.</li>
+                <li>Installers target Windows <code>.exe</code>, MSIX, macOS Intel/Apple silicon, and Linux package formats.</li>
+            </ul>
+        </article>
+
+        <article class="feature-panel">
+            <h3>Alerts and notes</h3>
+            <div class="alert-stack">
+                @foreach (var alert in snapshot.Alerts)
+                {
+                    <div class="alert-card @alert.Severity">
+                        <strong>@alert.Title</strong>
+                        <p>@alert.Detail</p>
+                    </div>
+                }
+            </div>
+        </article>
+    </section>
+}
+
+@code {
+    private Timekeeper.Application.Models.DashboardSnapshot? snapshot;
+
+    protected override async Task OnInitializedAsync()
+        => snapshot = await WorkspaceQueryService.GetDashboardAsync();
+}

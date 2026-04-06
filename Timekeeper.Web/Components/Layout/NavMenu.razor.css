@@ -1,0 +1,94 @@
+.nav-shell {
+    min-height: 100%;
+    padding: 2rem 1.4rem;
+    background:
+        radial-gradient(circle at top, rgba(255, 184, 92, 0.24), transparent 36%),
+        linear-gradient(180deg, rgba(7, 17, 18, 0.96) 0%, rgba(11, 37, 41, 0.92) 48%, rgba(17, 54, 59, 0.96) 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.brand-mark {
+    width: 3.2rem;
+    height: 3.2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #f6c278, #ff8e6e 52%, #7ae7c7);
+    color: #0b1318;
+    font-family: "Georgia", "Palatino Linotype", serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+}
+
+.brand-title {
+    font-family: "Georgia", "Palatino Linotype", serif;
+    font-size: 1.55rem;
+    color: #fff9ef;
+}
+
+.brand-subtitle {
+    color: rgba(241, 245, 243, 0.72);
+    font-size: 0.88rem;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-links ::deep .nav-link {
+    padding: 0.9rem 1rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    color: rgba(243, 247, 245, 0.78);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+    transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.nav-links ::deep .nav-link:hover,
+.nav-links ::deep a.active {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #fff8f0;
+}
+
+.nav-callout {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-radius: 1.2rem;
+    background: rgba(255, 232, 204, 0.1);
+    border: 1px solid rgba(255, 232, 204, 0.12);
+}
+
+.callout-label {
+    margin: 0 0 0.45rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(255, 232, 204, 0.7);
+}
+
+.callout-copy {
+    margin: 0;
+    color: rgba(243, 247, 245, 0.82);
+    line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+    .nav-shell {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}

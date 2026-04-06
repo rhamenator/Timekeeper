@@ -1,0 +1,44 @@
+@page "/tax-rules"
+@inject Timekeeper.Application.Abstractions.IWorkspaceQueryService WorkspaceQueryService
+
+<PageTitle>Tax Rules</PageTitle>
+
+<section class="panel-header">
+    <div>
+        <p class="eyebrow">Rules engine inventory</p>
+        <h2>Seeded tax rules and migration notes</h2>
+    </div>
+</section>
+
+@if (rules.Count == 0)
+{
+    <p class="loading-state">Loading tax rules...</p>
+}
+else
+{
+    <section class="card-grid">
+        @foreach (var rule in rules)
+        {
+            <article class="feature-panel">
+                <div class="rule-header">
+                    <div>
+                        <p class="rule-code">@rule.Code</p>
+                        <h3>@rule.Name</h3>
+                    </div>
+                    <span class="status-pill">@rule.Status</span>
+                </div>
+                <p>@rule.JurisdictionKind • @rule.RegionCode • @rule.CalculationKind</p>
+                <p>Rate: @rule.RatePercent.ToString("0.####")%</p>
+                <p>Source: @rule.SourceSystem / @rule.SourceReference</p>
+                <p class="rule-notes">@rule.Notes</p>
+            </article>
+        }
+    </section>
+}
+
+@code {
+    private IReadOnlyList<Timekeeper.Application.Models.TaxRuleRecord> rules = [];
+
+    protected override async Task OnInitializedAsync()
+        => rules = await WorkspaceQueryService.GetTaxRulesAsync();
+}

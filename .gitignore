@@ -1,0 +1,30 @@
+# Build outputs
+artifacts/
+**/bin/
+**/obj/
+TestResults/
+
+# IDE and local tooling
+.vs/
+*.user
+*.suo
+*.userosscache
+*.rsuser
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local environment overrides
+appsettings.Local.json
+appsettings.*.local.json
+
+# Installer payloads and packages
+*.msix
+*.appx
+*.appxbundle
+*.msixbundle
+*.deb
+*.rpm
+*.pkg
+*.dmg

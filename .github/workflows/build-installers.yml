@@ -1,0 +1,191 @@
+name: Build Installers
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_release: ${{ steps.version.outputs.is_release }}
+    steps:
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            is_release="true"
+          else
+            version="0.1.0-ci.${GITHUB_RUN_NUMBER}"
+            is_release="false"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "is_release=${is_release}" >> "$GITHUB_OUTPUT"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Build solution
+        run: dotnet build ./Timekeeper.slnx --configuration Release
+
+      - name: Run tests
+        run: dotnet test ./Timekeeper.slnx --configuration Release --no-build
+
+  windows:
+    runs-on: windows-latest
+    needs: [prepare, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore local tools
+        shell: pwsh
+        run: dotnet tool restore
+
+      - name: Generate brand assets
+        shell: pwsh
+        run: .\packaging\branding\Generate-BrandAssets.ps1 -Root $PWD
+
+      - name: Publish win-x64
+        shell: pwsh
+        run: .\publish-timekeeper.ps1 -Runtime win-x64
+
+      - name: Build MSIX
+        shell: pwsh
+        run: .\packaging\windows\msix\package-msix.ps1 -PublishDir .\artifacts\win-x64 -Version '${{ needs.prepare.outputs.version }}' -OutputDir .\artifacts\installers
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Build EXE installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=${{ needs.prepare.outputs.version }} .\packaging\windows\Timekeeper.iss
+
+      - name: Upload Windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: timekeeper-windows-installers
+          path: artifacts/installers/*
+
+  linux:
+    runs-on: ubuntu-latest
+    needs: [prepare, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install packaging dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev rpm
+          sudo gem install --no-document fpm
+
+      - name: Publish linux-x64
+        run: pwsh ./publish-timekeeper.ps1 -Runtime linux-x64
+
+      - name: Build DEB
+        run: |
+          chmod +x ./packaging/linux/package-deb.sh
+          ./packaging/linux/package-deb.sh ./artifacts/linux-x64 ${{ needs.prepare.outputs.version }} ./artifacts/installers
+
+      - name: Build RPM
+        run: |
+          chmod +x ./packaging/linux/package-rpm.sh
+          ./packaging/linux/package-rpm.sh ./artifacts/linux-x64 ${{ needs.prepare.outputs.version }} ./artifacts/installers
+
+      - name: Upload Linux installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: timekeeper-linux-installers
+          path: artifacts/installers/*
+
+  macos:
+    runs-on: macos-latest
+    needs: [prepare, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publish osx-x64
+        run: pwsh ./publish-timekeeper.ps1 -Runtime osx-x64
+
+      - name: Publish osx-arm64
+        run: |
+          dotnet restore ./Timekeeper.Web/Timekeeper.Web.csproj -r osx-arm64
+          pwsh ./publish-timekeeper.ps1 -Runtime osx-arm64
+
+      - name: Build PKG installers
+        run: |
+          chmod +x ./packaging/macos/package-pkg.sh
+          ./packaging/macos/package-pkg.sh ./artifacts/osx-x64 ${{ needs.prepare.outputs.version }} osx-x64 ./artifacts/installers
+          ./packaging/macos/package-pkg.sh ./artifacts/osx-arm64 ${{ needs.prepare.outputs.version }} osx-arm64 ./artifacts/installers
+
+      - name: Upload macOS installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: timekeeper-macos-installers
+          path: artifacts/installers/*
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [prepare, windows, linux, macos]
+    if: needs.prepare.outputs.is_release == 'true'
+    steps:
+      - name: Download Windows installers
+        uses: actions/download-artifact@v4
+        with:
+          name: timekeeper-windows-installers
+          path: release/windows
+
+      - name: Download Linux installers
+        uses: actions/download-artifact@v4
+        with:
+          name: timekeeper-linux-installers
+          path: release/linux
+
+      - name: Download macOS installers
+        uses: actions/download-artifact@v4
+        with:
+          name: timekeeper-macos-installers
+          path: release/macos
+
+      - name: Publish GitHub release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/windows/*
+            release/linux/*
+            release/macos/*

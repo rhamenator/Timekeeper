@@ -1,0 +1,299 @@
+@import url('lib/bootstrap/dist/css/bootstrap.min.css');
+
+:root {
+    --tk-bg: #071518;
+    --tk-panel: rgba(12, 28, 31, 0.88);
+    --tk-panel-strong: rgba(17, 38, 43, 0.95);
+    --tk-text: #f6f0e4;
+    --tk-text-soft: rgba(246, 240, 228, 0.8);
+    --tk-muted: rgba(219, 210, 194, 0.58);
+    --tk-border: rgba(255, 255, 255, 0.08);
+    --tk-border-strong: rgba(255, 255, 255, 0.16);
+    --tk-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    color: var(--tk-text);
+    font-family: "Aptos", "Segoe UI Variable Text", "Trebuchet MS", sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(255, 142, 110, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(122, 231, 199, 0.12), transparent 24%),
+        linear-gradient(180deg, #071518 0%, #0b1f22 40%, #102b30 100%);
+}
+
+a {
+    color: inherit;
+}
+
+h2,
+h3 {
+    margin-top: 0;
+    font-family: "Georgia", "Palatino Linotype", serif;
+}
+
+code {
+    color: #ffd8b0;
+}
+
+.loading-state {
+    color: var(--tk-text-soft);
+}
+
+.hero-panel,
+.feature-panel {
+    position: relative;
+    overflow: hidden;
+    background: var(--tk-panel);
+    border: 1px solid var(--tk-border);
+    border-radius: 1.6rem;
+    box-shadow: var(--tk-shadow);
+}
+
+.hero-panel {
+    display: grid;
+    grid-template-columns: 1.6fr 0.9fr;
+    gap: 1.5rem;
+    padding: 1.8rem;
+}
+
+.hero-panel::before,
+.feature-panel::before {
+    content: "";
+    position: absolute;
+    inset: -35% auto auto 60%;
+    width: 18rem;
+    height: 18rem;
+    background: radial-gradient(circle, rgba(246, 194, 120, 0.2), transparent 68%);
+    pointer-events: none;
+}
+
+.hero-panel.compact {
+    grid-template-columns: 1.4fr 1fr;
+}
+
+.hero-copy {
+    max-width: 56rem;
+    line-height: 1.7;
+    color: var(--tk-text-soft);
+}
+
+.hero-orbit {
+    display: grid;
+    place-items: center;
+}
+
+.orbit-card,
+.payroll-totals {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--tk-border);
+    border-radius: 1.4rem;
+    padding: 1.25rem;
+}
+
+.orbit-card span,
+.payroll-totals span,
+.metric-card span {
+    display: block;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--tk-muted);
+}
+
+.orbit-card strong,
+.metric-card strong,
+.payroll-totals strong {
+    font-size: 1.6rem;
+    font-family: "Georgia", "Palatino Linotype", serif;
+}
+
+.metric-grid,
+.panel-grid,
+.card-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.metric-card {
+    padding: 1.2rem;
+    border-radius: 1.4rem;
+    border: 1px solid var(--tk-border);
+    background: var(--tk-panel-strong);
+    box-shadow: var(--tk-shadow);
+    animation: rise-in 500ms ease both;
+}
+
+.metric-card.aqua { border-color: rgba(122, 231, 199, 0.28); }
+.metric-card.gold { border-color: rgba(246, 194, 120, 0.28); }
+.metric-card.coral { border-color: rgba(255, 142, 110, 0.28); }
+.metric-card.mint { border-color: rgba(152, 240, 209, 0.28); }
+
+.feature-panel {
+    padding: 1.4rem;
+}
+
+.alert-stack {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.alert-card {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--tk-border);
+}
+
+.alert-card p {
+    margin-bottom: 0;
+    color: var(--tk-text-soft);
+}
+
+.alert-card.warning { border-color: rgba(246, 194, 120, 0.3); }
+.alert-card.info { border-color: rgba(122, 231, 199, 0.26); }
+.alert-card.success { border-color: rgba(152, 240, 209, 0.26); }
+
+.signal-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    line-height: 1.7;
+    color: var(--tk-text-soft);
+}
+
+.panel-header {
+    margin-bottom: -0.25rem;
+}
+
+.person-card {
+    display: flex;
+    gap: 1rem;
+}
+
+.person-avatar {
+    flex: 0 0 3rem;
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(122, 231, 199, 0.28), rgba(255, 142, 110, 0.28));
+    font-family: "Georgia", "Palatino Linotype", serif;
+    font-size: 1.2rem;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.9rem 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    text-align: left;
+}
+
+.data-table th {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--tk-muted);
+}
+
+.data-table td {
+    color: var(--tk-text-soft);
+}
+
+.cell-subtitle {
+    font-size: 0.85rem;
+    color: var(--tk-muted);
+}
+
+.payroll-totals {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+}
+
+.rule-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.rule-code {
+    margin: 0;
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tk-muted);
+}
+
+.status-pill {
+    align-self: start;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 142, 110, 0.12);
+    border: 1px solid rgba(255, 142, 110, 0.2);
+    color: #ffd4c7;
+    font-size: 0.82rem;
+}
+
+.rule-notes {
+    color: var(--tk-text-soft);
+    line-height: 1.6;
+}
+
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1080px) {
+    .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-panel,
+    .hero-panel.compact,
+    .panel-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-panel,
+    .feature-panel,
+    .metric-card {
+        padding: 1rem;
+    }
+}

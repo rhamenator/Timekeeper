@@ -1,0 +1,25 @@
+@page "/migration"
+
+<PageTitle>Migration</PageTitle>
+
+<section class="panel-grid">
+    <article class="feature-panel">
+        <p class="eyebrow">Legacy inputs</p>
+        <h2>What we are preserving from the old systems</h2>
+        <ul class="signal-list">
+            <li><code>E:\TIMELOG</code> contributes the operational workflow: employees, hours, pay history, and starter tax defaults.</li>
+            <li><code>E:\TheSWShop\Zephyr</code> contributes the rules patterns for state-specific and local-specific withholding edge cases.</li>
+            <li><code>E:\BrassLedger</code> contributes the modern .NET layering and packaging model for a desktop-delivered web shell.</li>
+        </ul>
+    </article>
+
+    <article class="feature-panel">
+        <p class="eyebrow">Tax posture</p>
+        <h2>How stale tables are handled</h2>
+        <ul class="signal-list">
+            <li>Every imported legacy rule is marked <code>NeedsRefresh</code> until we validate and replace it with a current source.</li>
+            <li>The schema stores source references, notes, and effective dates so we can audit rule provenance.</li>
+            <li>The next milestone should add a dedicated import/refresh workflow for current federal, state, and local tables.</li>
+        </ul>
+    </article>
+</section>

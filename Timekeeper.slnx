@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="Timekeeper.Api/Timekeeper.Api.csproj" />
+  <Project Path="Timekeeper.Application/Timekeeper.Application.csproj" />
+  <Project Path="Timekeeper.Domain/Timekeeper.Domain.csproj" />
+  <Project Path="Timekeeper.Infrastructure/Timekeeper.Infrastructure.csproj" />
+  <Project Path="Timekeeper.Tests/Timekeeper.Tests.csproj" />
+  <Project Path="Timekeeper.Tools/Timekeeper.Tools.csproj" />
+  <Project Path="Timekeeper.Web/Timekeeper.Web.csproj" />
+</Solution>
