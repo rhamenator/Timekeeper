@@ -30,19 +30,6 @@ Relevant legacy files included:
 - `txtable.dbf`
 - `fedtxsch.dbf`
 
-### Zephyr
-
-Primary contribution:
-
-- strategy patterns for state and local tax edge cases
-- ceiling-based and pay-period-based special cases
-- hours-worked assessments
-
-Relevant legacy files included:
-
-- `taxengin.prg`
-- `taxrules.prg`
-
 ### BrassLedger
 
 Primary contribution:
