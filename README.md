@@ -1,6 +1,6 @@
 # Timekeeper
 
-Timekeeper is a modern rebuild of the legacy `E:\TIMELOG` system in a new cross-platform .NET 10 solution rooted at `E:\Timekeeper`.
+Timekeeper is a modern rebuild of a legacy Timelog system in a new cross-platform .NET 10 solution.
 
 The new architecture keeps the original business shape of the old app:
 
@@ -8,11 +8,6 @@ The new architecture keeps the original business shape of the old app:
 - time entry capture
 - payroll preview and pay history
 - tax rule configuration with effective dates and source tracking
-
-It also borrows two important ideas from the companion systems you pointed me to:
-
-- `E:\BrassLedger` for the modern .NET layering and packaging model
-- `E:\TheSWShop\Zephyr` for data-driven tax calculation strategies instead of UI-bound special cases
 
 ## Current stack
 
@@ -25,7 +20,7 @@ It also borrows two important ideas from the companion systems you pointed me to
 
 The seeded tax rules in this first pass are intentionally marked `NeedsRefresh`.
 
-That is by design. The old FoxPro tax defaults in `TIMELOG` and the calculation patterns in `Zephyr` are useful for migration and engine design, but they should not be treated as current tax law until replaced with validated current tables and rates.
+That is by design. The old FoxPro tax defaults in Timelog are useful for migration and engine design, but they should not be treated as current tax law until replaced with validated current tables and rates.
 
 ## Quick start
 
