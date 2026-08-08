@@ -68,6 +68,12 @@ The engine supports multiple calculation styles so we can model legacy tax behav
 - local ceiling percentage
 - annualized bracket withholding
 
+The payroll computation pipeline also supports capped pre-tax deductions,
+post-tax deductions (including garnishment-style fixed amounts), employer
+contributions, deferred compensation, and annual limits. Deductions are
+applied in a deterministic order and cannot reduce the calculated check below
+zero.
+
 ### Infrastructure
 
 Contains:
@@ -79,6 +85,21 @@ Contains:
 - query-service implementation
 
 The seed data is deliberately annotated with `NeedsRefresh` to make stale tax content obvious.
+
+## Updated parity boundary
+
+Read-only review of `E:\TIMELOG` and `E:\PAYROLL` confirmed useful intent for
+deferred compensation, retirement contributions, charitable deductions,
+garnishments, direct-deposit-style post-tax amounts, employer contributions,
+effective dates, wage bases, and pay-history summaries. The modern engine now
+covers the generic calculation primitives; the 1993 rates and tables remain
+historical evidence and are not imported as current law.
+
+Still missing are configurable overtime earning lines, paid-leave accruals,
+direct-deposit allocation, check/advice output, corrected net-to-gross solving,
+and a tax-table update/import workflow. BrassLedger remains the broader payroll
+and accounting product; Timekeeper's scope is time capture plus auditable pay
+calculation.
 
 ### Web and API
 

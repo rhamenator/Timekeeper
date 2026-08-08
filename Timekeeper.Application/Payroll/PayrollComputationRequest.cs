@@ -12,4 +12,5 @@ public sealed record PayrollComputationRequest(
     decimal YearToDateGrossPay,
     decimal DeferredAmount,
     DateOnly CheckDate,
-    IReadOnlyCollection<TaxRule> CandidateRules);
+    IReadOnlyCollection<TaxRule> CandidateRules,
+    IReadOnlyCollection<PayrollAdjustment>? Adjustments = null);

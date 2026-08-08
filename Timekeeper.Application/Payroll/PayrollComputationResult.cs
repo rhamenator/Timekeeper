@@ -2,8 +2,12 @@ namespace Timekeeper.Application.Payroll;
 
 public sealed record PayrollComputationResult(
     decimal GrossPay,
+    decimal TaxableGrossPay,
     decimal NetPay,
-    IReadOnlyList<TaxLineResult> TaxLines);
+    decimal TotalEmployeeDeductions,
+    decimal EmployerContributionTotal,
+    IReadOnlyList<TaxLineResult> TaxLines,
+    IReadOnlyList<PayrollAdjustmentResult> AdjustmentLines);
 
 public sealed record TaxLineResult(
     string RuleCode,

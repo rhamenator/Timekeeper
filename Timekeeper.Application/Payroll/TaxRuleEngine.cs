@@ -11,8 +11,38 @@ public sealed class TaxRuleEngine
     public PayrollComputationResult Compute(PayrollComputationRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
+        if (request.GrossPay < 0m)
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Gross pay cannot be negative.");
+        }
+        if (request.DeferredAmount < 0m)
+        {
+            throw new ArgumentOutOfRangeException(nameof(request), "Deferred amount cannot be negative.");
+        }
 
-        var taxableGross = Math.Max(0m, request.GrossPay - request.DeferredAmount);
+        var adjustmentResults = new List<PayrollAdjustmentResult>();
+        var remainingGross = request.GrossPay;
+        var deferredAmount = Math.Min(request.DeferredAmount, remainingGross);
+        if (deferredAmount > 0m)
+        {
+            adjustmentResults.Add(new PayrollAdjustmentResult(
+                "DEFERRED",
+                "Deferred compensation",
+                PayrollAdjustmentKind.PreTaxDeduction,
+                deferredAmount));
+            remainingGross -= deferredAmount;
+        }
+
+        foreach (var adjustment in (request.Adjustments ?? [])
+                     .Where(item => item.Kind == PayrollAdjustmentKind.PreTaxDeduction)
+                     .OrderBy(item => item.Code, StringComparer.OrdinalIgnoreCase))
+        {
+            var amount = Math.Min(ComputeAdjustmentAmount(adjustment, request.GrossPay), remainingGross);
+            adjustmentResults.Add(ToResult(adjustment, amount));
+            remainingGross -= amount;
+        }
+
+        var taxableGross = remainingGross;
         var lines = new List<TaxLineResult>();
 
         foreach (var rule in request.CandidateRules
@@ -45,7 +75,69 @@ public sealed class TaxRuleEngine
         }
 
         var totalTax = lines.Sum(line => line.Amount);
-        return new PayrollComputationResult(request.GrossPay, decimal.Round(request.GrossPay - totalTax, 2, MidpointRounding.AwayFromZero), lines);
+        var remainingNet = Math.Max(0m, request.GrossPay
+            - adjustmentResults.Where(item => item.Kind == PayrollAdjustmentKind.PreTaxDeduction).Sum(item => item.Amount)
+            - totalTax);
+
+        foreach (var adjustment in (request.Adjustments ?? [])
+                     .Where(item => item.Kind == PayrollAdjustmentKind.PostTaxDeduction)
+                     .OrderBy(item => item.Code, StringComparer.OrdinalIgnoreCase))
+        {
+            var amount = Math.Min(ComputeAdjustmentAmount(adjustment, request.GrossPay), remainingNet);
+            adjustmentResults.Add(ToResult(adjustment, amount));
+            remainingNet -= amount;
+        }
+
+        foreach (var adjustment in (request.Adjustments ?? [])
+                     .Where(item => item.Kind == PayrollAdjustmentKind.EmployerContribution)
+                     .OrderBy(item => item.Code, StringComparer.OrdinalIgnoreCase))
+        {
+            adjustmentResults.Add(ToResult(adjustment, ComputeAdjustmentAmount(adjustment, request.GrossPay)));
+        }
+
+        var employeeDeductions = adjustmentResults
+            .Where(item => item.Kind != PayrollAdjustmentKind.EmployerContribution)
+            .Sum(item => item.Amount);
+        var employerContributions = adjustmentResults
+            .Where(item => item.Kind == PayrollAdjustmentKind.EmployerContribution)
+            .Sum(item => item.Amount);
+
+        return new PayrollComputationResult(
+            request.GrossPay,
+            taxableGross,
+            decimal.Round(remainingNet, 2, MidpointRounding.AwayFromZero),
+            decimal.Round(employeeDeductions, 2, MidpointRounding.AwayFromZero),
+            decimal.Round(employerContributions, 2, MidpointRounding.AwayFromZero),
+            lines,
+            adjustmentResults);
+    }
+
+    private static PayrollAdjustmentResult ToResult(PayrollAdjustment adjustment, decimal amount)
+        => new(
+            adjustment.Code,
+            adjustment.Name,
+            adjustment.Kind,
+            decimal.Round(amount, 2, MidpointRounding.AwayFromZero));
+
+    private static decimal ComputeAdjustmentAmount(PayrollAdjustment adjustment, decimal grossPay)
+    {
+        if (adjustment.FixedAmount < 0m || adjustment.RatePercent < 0m
+            || adjustment.PerPeriodCap < 0m || adjustment.AnnualCap < 0m
+            || adjustment.YearToDateAmount < 0m)
+        {
+            throw new ArgumentOutOfRangeException(nameof(adjustment), $"Adjustment {adjustment.Code} contains a negative amount.");
+        }
+
+        var amount = adjustment.FixedAmount + (grossPay * adjustment.RatePercent / 100m);
+        if (adjustment.PerPeriodCap > 0m)
+        {
+            amount = Math.Min(amount, adjustment.PerPeriodCap);
+        }
+        if (adjustment.AnnualCap > 0m)
+        {
+            amount = Math.Min(amount, Math.Max(0m, adjustment.AnnualCap - adjustment.YearToDateAmount));
+        }
+        return decimal.Round(amount, 2, MidpointRounding.AwayFromZero);
     }
 
     private static bool IsApplicable(TaxRule rule, PayrollComputationRequest request)
