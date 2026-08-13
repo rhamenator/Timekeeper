@@ -165,19 +165,19 @@ jobs:
     if: needs.prepare.outputs.is_release == 'true'
     steps:
       - name: Download Windows installers
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: timekeeper-windows-installers
           path: release/windows
 
       - name: Download Linux installers
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: timekeeper-linux-installers
           path: release/linux
 
       - name: Download macOS installers
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: timekeeper-macos-installers
           path: release/macos
