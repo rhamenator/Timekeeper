@@ -12,6 +12,7 @@
 #endif
 
 [Setup]
+UninstallDisplayIcon={app}\app-icon.ico
 AppId={{8F6552E0-9510-4A65-B3A9-64715E3AE26F}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -24,14 +25,15 @@ OutputBaseFilename=Timekeeper-setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile=..\..\Timekeeper.Web\Assets\timekeeper.ico
+SetupIconFile=app-icon.ico
 
 [Files]
+Source: "app-icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\artifacts\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Timekeeper"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\Timekeeper"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\Timekeeper"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\app-icon.ico"
+Name: "{autodesktop}\Timekeeper"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\app-icon.ico"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch Timekeeper"; Flags: nowait postinstall skipifsilent

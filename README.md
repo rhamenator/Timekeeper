@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/assets/logo.png" alt="Timekeeper logo" width="220">
+</p>
+
 # Timekeeper
 
 Timekeeper is a modern rebuild of a legacy Timelog system in a new cross-platform .NET 10 solution.
